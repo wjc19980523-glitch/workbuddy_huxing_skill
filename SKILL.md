@@ -5,6 +5,27 @@ description: 户型成片：根据户型图/CAD/效果图填写 project.json，�
 
 # 户型成片 Skill
 
+## WorkBuddy 填空（推荐）
+
+最短出片路径（今晚录制 / 日常复用都走这条）：
+
+1. **输入三图**：户型图（plan）+ CAD 图 + 效果图（2–3 张代表性 VR）
+2. **只改 `project.json`**：可复制 `examples/this_plan/project.json`，改 `meta`（标题/面积/朝向等）与 `vr_images`；**禁止改 `render/`、`shots/`、`schema/`**
+3. **一键出片**：`./run_all.sh path/to/project.json`
+4. **跑通判定**：出现可播放的 `output/huxing_final.mp4`
+
+可复制提示词：
+
+```
+用 huxing skill：根据我给的户型图、CAD、效果图，只改 project.json（不要动 render/），填完跑 ./run_all.sh 出漫游片。
+```
+
+```
+用户型 skill，丢进三张图出户型讲解片；只填空 project.json，禁止改 render。
+```
+
+> 后续（今晚不主录）：仅户型+CAD+风格提示、由 AI 生成各房间效果图的 v2，等几何对齐冻结后再用。
+
 ## 何时使用
 
 当用户提供：
