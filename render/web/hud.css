@@ -1,0 +1,29 @@
+@font-face { font-family: 'CJK'; src: local('Noto Sans CJK SC'), local('NotoSansCJKsc-Regular'); }
+html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #000;
+  font-family: 'Noto Sans CJK SC', 'Noto Sans CJK', sans-serif; color: #fff; }
+#gl, #fx { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+#hud { position: absolute; inset: 0; pointer-events: none; }
+.mono { font-family: 'DejaVu Sans Mono', 'Noto Sans Mono CJK SC', monospace; letter-spacing: 0.12em; }
+.abs { position: absolute; }
+
+/* section label, top-left */
+.sec { left: 52px; top: 46px; display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.sec .num { background: #d9573b; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 3px; font-weight: 700; }
+.sec .zh { font-weight: 500; letter-spacing: 0.06em; }
+.sec .en { font-size: 9px; color: rgba(255, 255, 255, 0.4); letter-spacing: 0.32em; }
+.light .sec .zh { color: #2a2622; } .light .sec .en { color: rgba(40, 36, 32, 0.45); }
+
+/* captions, bottom centre */
+.cap { left: 0; right: 0; bottom: 48px; text-align: center; }
+.cap .zh { font-size: 26px; font-weight: 700; letter-spacing: 0.04em; text-shadow: 0 1px 12px rgba(0,0,0,.55); }
+.cap .zh .hl { color: #ef6a4c; }
+.cap .zh span { display: inline-block; }
+.cap .en { margin-top: 6px; font-family: 'DejaVu Serif', serif; font-style: italic; font-size: 13px; color: rgba(255,255,255,.62); letter-spacing: 0.02em; }
+.light .cap .zh { color: #2a2622; text-shadow: none; } .light .cap .en { color: rgba(40,36,32,.55); }
+
+/* small dark room tags */
+.tag { transform: translate(-50%, -100%); background: rgba(22, 20, 19, 0.88); border-radius: 4px; padding: 4px 9px;
+  font-size: 14px; white-space: nowrap; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.tag b { font-weight: 600; } .tag i { font-style: normal; color: #ef8a6c; margin-left: 7px; font-size: 12px; }
+.tag::after { content: ''; position: absolute; left: 50%; bottom: -14px; width: 1px; height: 14px; background: rgba(239,106,76,.9); }

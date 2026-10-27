@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>户型成片渲染</title>
+  <link rel="stylesheet" href="hud.css">
+  <style>body{margin:0;overflow:hidden;background:#000}#gl,#fx,#hud{position:absolute;left:0;top:0;width:1280px;height:720px}#fx{pointer-events:none}</style>
+</head>
+<body>
+  <canvas id="gl" width="1280" height="720"></canvas>
+  <canvas id="fx" width="1280" height="720"></canvas>
+  <div id="hud"></div>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

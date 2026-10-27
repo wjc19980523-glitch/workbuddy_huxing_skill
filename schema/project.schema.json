@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://huxing-skill/project.schema.json",
+  "title": "户型成片 Project",
+  "description": "参数化户型讲解视频的输入配置。WorkBuddy 只填这个文件，不写渲染代码。",
+  "type": "object",
+  "required": ["meta", "geometry", "rooms", "shots"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "项目元数据",
+      "required": ["title", "gross_area_m2", "net_area_m2"],
+      "properties": {
+        "title": { "type": "string", "description": "户型标题，如 '四室两厅'" },
+        "gross_area_m2": { "type": "number", "description": "建筑面积（㎡）" },
+        "net_area_m2": { "type": "number", "description": "套内面积（㎡）" },
+        "orientation": { "type": "string", "enum": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"], "default": "S", "description": "户型朝向（阳台/客厅主要朝向）" },
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90, "default": 30, "description": "纬度（用于日照计算）" },
+        "style": { "type": "string", "enum": ["mcm", "cream"], "default": "mcm", "description": "室内风格预设：mcm=中古风, cream=奶油风" }
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "description": "整体几何参数",
+      "required": ["width_m", "depth_m", "height_m"],
+      "properties": {
+        "width_m": { "type": "number", "minimum": 1, "description": "户型总宽度（米，长边）" },
+        "depth_m": { "type": "number", "minimum": 1, "description": "户型总深度（米，短边）" },
+        "height_m": { "type": "number", "minimum": 2, "maximum": 5, "default": 2.8, "description": "层高（米）" },
+        "wall_ext_m": { "type": "number", "default": 0.24, "description": "外墙厚度（米）" },
+        "wall_int_m": { "type": "number", "default": 0.12, "description": "内墙/隔断厚度（米）" },
+        "dims_top": { "type": "array", "items": { "type": "number" }, "description": "顶部尺寸链（毫米）" },
+        "dims_bottom": { "type": "array", "items": { "type": "number" }, "description": "底部尺寸链（毫米）" },
+        "dims_left": { "type": "array", "items": { "type": "number" }, "description": "左侧尺寸链（毫米）" },
+        "dims_right": { "type": "array", "items": { "type": "number" }, "description": "右侧尺寸链（毫米）" }
+      }
+    },
+    "walls": {
+      "type": "array",
+      "description": "墙体列表。只包含真正的墙（CAD 中灰色填充的结构墙和薄隔断），不包含柜体、家具等",
+      "items": {
+        "type": "object",
+        "required": ["a", "b", "thickness"],
+        "properties": {
+          "a": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "起点 [x, z]（米）" },
+          "b": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "终点 [x, z]（米）" },
+          "thickness": { "type": "number", "description": "墙厚（米），通常 0.24 外墙或 0.1~0.12 内墙" },
+          "exterior": { "type": "boolean", "default": false, "description": "是否外墙" },
+          "openings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["kind", "start", "end"],
+              "properties": {
+                "kind": { "type": "string", "enum": ["window", "door", "slide", "entry", "gap"], "description": "开口类型" },
+                "start": { "type": "number", "description": "沿墙起点距离（米）" },
+                "end": { "type": "number", "description": "沿墙终点距离（米）" },
+                "sill": { "type": "number", "default": 0, "description": "窗台高度（米），门为 0" },
+                "head": { "type": "number", "default": 2.15, "description": "过梁高度（米）" },
+                "swing": { "type": "number", "enum": [-1, 1], "default": 1, "description": "门开向：1=正向, -1=反向" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "description": "房间列表",
+      "items": {
+        "type": "object",
+        "required": ["id", "name_zh", "bounds"],
+        "properties": {
+          "id": { "type": "string", "description": "房间 ID，如 'living', 'master'" },
+          "name_zh": { "type": "string", "description": "中文名，如 '客厅', '主卧'" },
+          "name_en": { "type": "string", "description": "英文名，如 'LIVING', 'MASTER'" },
+          "bounds": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "矩形边界 [x0, x1, z0, z1]（米）"
+          },
+          "poly": {
+            "type": "array",
+            "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "description": "多边形顶点（可选，用于非矩形房间）"
+          },
+          "area_m2": { "type": "number", "description": "面积（㎡），null 表示不显示" },
+          "floor_type": { "type": "string", "enum": ["wood", "tile"], "default": "wood", "description": "地面材质" },
+          "tag_pos": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "标签位置 [x, z]（米）"
+          }
+        }
+      }
+    },
+    "furniture": {
+      "type": "array",
+      "description": "家具列表",
+      "items": {
+        "type": "object",
+        "required": ["type", "room", "x", "z"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "sofa", "sofa_3seat", "lounge_chair", "arm_chair", "coffee_table", "credenza",
+              "floor_lamp", "pendant", "dining_set", "bed", "nightstand", "wardrobe",
+              "desk", "bench", "rug", "plant", "art", "kitchen_run", "hob", "sink", "fridge",
+              "toilet", "vanity", "shower", "washer", "shoe_cabinet", "shelves"
+            ],
+            "description": "家具类型"
+          },
+          "room": { "type": "string", "description": "所属房间 ID" },
+          "x": { "type": "number", "description": "X 位置（米）" },
+          "z": { "type": "number", "description": "Z 位置（米）" },
+          "rotation": { "type": "number", "default": 0, "description": "旋转角度（弧度）" },
+          "scale": { "type": "number", "default": 1, "description": "缩放系数" },
+          "params": {
+            "type": "object",
+            "description": "家具特定参数，如 bed 的 width/length, sofa 的 seats 等"
+          }
+        }
+      }
+    },
+    "vr_images": {
+      "type": "array",
+      "description": "VR 漫游图片列表（按行走顺序）",
+      "items": {
+        "type": "object",
+        "required": ["file", "room", "duration"],
+        "properties": {
+          "file": { "type": "string", "description": "图片文件名（相对于 assets/vr/）" },
+          "room": { "type": "string", "description": "房间中文名" },
+          "duration": { "type": "number", "minimum": 0.5, "description": "停留时长（秒）" },
+          "area_m2": { "type": "number", "description": "显示的面积（可选）" },
+          "tag_anchor": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "标签锚点 [0-1, 0-1]，不设则居中"
+          },
+          "push_dir": { "type": "number", "enum": [-1, 1], "default": 1, "description": "Ken Burns 推进方向" }
+        }
+      }
+    },
+    "shots": {
+      "type": "object",
+      "description": "镜头段配置",
+      "properties": {
+        "terminal": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "default": 1.5 },
+            "prompt": { "type": "string", "default": "> 把这张户型图，变成一套能住进去的房子" }
+          }
+        },
+        "scan": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "default": 7 },
+            "paper_image": { "type": "string", "description": "纸面扫描图（可选，不设则自动生成）" }
+          }
+        },
+        "cad": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "default": 5 }
+          }
+        },
+        "build": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "default": 7 }
+          }
+        },
+        "tour": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true }
+          }
+        },
+        "sun": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "default": 8.5 }
+          }
+        }
+      }
+    },
+    "captions": {
+      "type": "array",
+      "description": "字幕列表",
+      "items": {
+        "type": "object",
+        "required": ["t0", "t1", "zh"],
+        "properties": {
+          "t0": { "type": "number", "description": "开始时间（秒）" },
+          "t1": { "type": "number", "description": "结束时间（秒）" },
+          "zh": { "type": "string", "description": "中文字幕" },
+          "hl": { "type": "string", "description": "高亮词" },
+          "en": { "type": "string", "description": "英文字幕" }
+        }
+      }
+    },
+    "area_table": {
+      "type": "array",
+      "description": "面积明细表（用于纸面和标签）",
+      "items": {
+        "type": "array",
+        "items": [
+          { "type": "string", "description": "房间名" },
+          { "type": "number", "description": "面积（㎡）" }
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "point2d": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "[x, z] 坐标（米）"
+    }
+  }
+}
